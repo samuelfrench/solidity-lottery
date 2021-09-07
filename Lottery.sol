@@ -3,11 +3,20 @@ import "github.com/provable-things/ethereum-api/provableAPI_0.6.sol";
 
 contract Lotto is usingProvable {
     address[] public entrants;
+    mapping(address => uint) public balances;
+    
     address public winner;
     bytes32 provableQueryId;
     
-    function enter() public {
-        entrants.push(msg.sender);
+    function enter() external payable {
+        if(balances[msg.sender] == 0 && msg.value==5000){
+            balances[msg.sender] = msg.value;
+            entrants.push(msg.sender);
+        } //else you have not paid the entry fee or have already entered
+    }
+    
+    function getLotteryBalance() external returns (uint256) {
+       return address(this).balance;
     }
     
     function selectWinner() public {
