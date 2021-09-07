@@ -1,4 +1,4 @@
-pragma solidity 0.8.7;
+pragma solidity 0.6.12;
 import "github.com/provable-things/ethereum-api/provableAPI_0.6.sol";
 
 contract Lotto is usingProvable {
@@ -29,7 +29,7 @@ contract Lotto is usingProvable {
     }
     
     //provable callback for selectWinner function
-    function __callback(bytes32 myid, string memory result) public {
+    function __callback(bytes32 myid, string memory result) public override {
         if(myid != provableQueryId) revert();
         winner = entrants[parseInt(result)];
     }
