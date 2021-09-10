@@ -1,27 +1,30 @@
 pragma solidity 0.6.12;
 import "github.com/provable-things/ethereum-api/provableAPI_0.6.sol";
 
+//TODO this needs testing
 contract Lotto is usingProvable {
     address[] public entrants;
-    mapping(address => uint) public balances;
+    mapping(address => uint) public balances; //TODO is this needed
+    uint256 public entranceFee = 5000;
     
     address public winner;
     bytes32 provableQueryId;
     
     function enter() external payable {
-        if(balances[msg.sender] == 0 && msg.value==5000){
+        if(balances[msg.sender] == 0 && msg.value==entranceFee){
             balances[msg.sender] = msg.value;
             entrants.push(msg.sender);
         } //else you have not paid the entry fee or have already entered
     }
     
-    function getLotteryBalance() external returns (uint256) {
+    function getLotteryBalance() public returns (uint256) {
        return address(this).balance;
     }
     
     function selectWinner() public {
         if(winnerHasNotBeenSet() && provableQueryHasNotRun()){
-            provableQueryId = provable_query("WolframAlpha", constructProvableQuery());
+            provableQueryId = provable_query("WolframAlpha", constructProvableQuery()); //TODO switch to more secure source
+            //__callback function is activated
         }
     }
     
@@ -41,5 +44,13 @@ contract Lotto is usingProvable {
     function __callback(bytes32 myid, string memory result) public override {
         if(myid != provableQueryId) revert();
         winner = entrants[parseInt(result)];
+        distributeWinnings();
+    }
+    
+    //TODO move to new file
+    function distributeWinnings() public {
+        if (!payable(winner).send(getLotteryBalance())) {
+            //handle failed send
+        }
     }
 }
