@@ -47,7 +47,7 @@ contract Lotto is usingProvable {
         distributeWinnings();
     }
     
-    //TODO move to new file
+    //TODO move to new file and restrict visibility
     function distributeWinnings() public {
         if (!payable(winner).send(getLotteryBalance())) {
             //handle failed send TODO throw an error here
