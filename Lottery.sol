@@ -40,7 +40,7 @@ contract Lotto is usingProvable {
         return strConcat("random number between 0 and ", uint2str(entrants.length-1));
     }
     
-    //provable callback for selectWinner function
+    //provable callback for selectWinner function (this takes a while to be called)
     function __callback(bytes32 myid, string memory result) public override {
         if(myid != provableQueryId) revert();
         winner = entrants[parseInt(result)];
@@ -50,7 +50,7 @@ contract Lotto is usingProvable {
     //TODO move to new file
     function distributeWinnings() public {
         if (!payable(winner).send(getLotteryBalance())) {
-            //handle failed send
+            //handle failed send TODO throw an error here
         }
     }
 }
