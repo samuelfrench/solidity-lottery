@@ -3,11 +3,12 @@ import "github.com/provable-things/ethereum-api/provableAPI_0.6.sol";
 
 //TODO this needs testing
 contract Lotto is usingProvable {
-    address[] public entrants;
-    mapping(address => uint) public balances; //TODO is this needed
-    uint256 public entranceFee = 5000;
+    address payable[] public entrants;
+    mapping(address => uint) public balances;
+    uint256 public entranceFee = 500000000000000; //50000; //wei
+    uint256 public moneyDistributedDebug = 3;
     
-    address public winner;
+    address payable public winner;
     bytes32 provableQueryId;
     
     function enter() external payable {
@@ -22,7 +23,7 @@ contract Lotto is usingProvable {
     }
     
     function selectWinner() public {
-        if(winnerHasNotBeenSet() && provableQueryHasNotRun()){
+        if(winnerHasNotBeenSet() && provableQueryHasNotRun()){ //could this get stuck and prevent the money from being distributed? add a back-door for creator?
             provableQueryId = provable_query("WolframAlpha", constructProvableQuery()); //TODO switch to more secure source
             //__callback function is activated
         }
@@ -48,9 +49,8 @@ contract Lotto is usingProvable {
     }
     
     //TODO move to new file and restrict visibility
-    function distributeWinnings() public {
-        if (!payable(winner).send(getLotteryBalance())) {
-            //handle failed send TODO throw an error here
-        }
+    function distributeWinnings() public returns (uint256) {
+        //TODO check if winner has not been set yet
+        winner.transfer(getLotteryBalance());
     }
 }
