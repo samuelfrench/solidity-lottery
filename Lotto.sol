@@ -16,6 +16,7 @@ contract Lotto is usingProvable {
             balances[msg.sender] = msg.value;
             entrants.push(msg.sender);
         } //else you have not paid the entry fee or have already entered
+        //TODO need toc heck lottery already completed
     }
     
     function getLotteryBalance() public returns (uint256) {
