@@ -12,6 +12,7 @@ contract Lotto is usingProvable {
     bytes32 provableQueryId;
     
     function enter() external payable {
+        //TODO can use a require here
         if(balances[msg.sender] == 0 && msg.value==entranceFee){
             balances[msg.sender] = msg.value;
             entrants.push(msg.sender);
@@ -21,6 +22,10 @@ contract Lotto is usingProvable {
     
     function getLotteryBalance() public returns (uint256) {
        return address(this).balance;
+    }
+    
+    function getQuantityOfEntrants() public view returns(uint count) {
+        return entrants.length;
     }
     
     function selectWinner() public {
