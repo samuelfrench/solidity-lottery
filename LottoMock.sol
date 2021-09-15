@@ -1,6 +1,6 @@
 pragma solidity 0.6.12;
 
-//TODO set up folder structure in git repo
+//TODO should not be actually mocking class under test - remove this
 import "../contracts/Lotto.sol";
 
 contract LottoMock is Lotto {
