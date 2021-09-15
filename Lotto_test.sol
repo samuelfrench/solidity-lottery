@@ -47,6 +47,24 @@ contract testSuite {
     
     
     ///case 2: when: fee too little -> then: return money, don't enter
+    /// #sender: account-0
+    /// #value: 1000
+    function entryFeeTooLittle() public payable {
+        Assert.equal(lotto.getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
+        Assert.equal(lotto.getLotteryBalance(), uint256(0), "expecting 0 lottery balance before entering");
+
+        
+        try lotto.enter{value:1000}() {
+            Assert.ok(false, 'succeed unexpected');
+        } catch Error(string memory reason) {
+            Assert.equal(reason, "Invalid entry fee provided.", "It should fail due to invalid entry fee.");
+        } catch (bytes memory /*lowLevelData*/) {
+            Assert.ok(false, 'failed unexpected');
+        }
+        
+        Assert.equal(lotto.getLotteryBalance(), uint256(0), "expecting lottery balance equal to entrance fee after entering");
+        Assert.equal(lotto.getQuantityOfEntrants(), uint256(0), "user should have successfully entered the lottery");
+    }
     
     ///case 3: when already entered -> then: return money, don't enter
     
