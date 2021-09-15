@@ -11,5 +11,4 @@ contract LottoMock is Lotto {
     function setProvableQueryId() public {
         provableQueryId = bytes32("abc");
     }
-    
 }

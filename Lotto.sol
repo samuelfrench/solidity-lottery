@@ -10,15 +10,22 @@ contract Lotto is usingProvable {
     
     address payable public winner;
     bytes32 provableQueryId;
+    constructor() public {}
     
     function enter() external payable {
         require(msg.value==entranceFee, "Invalid entry fee provided.");
         require(balances[msg.sender] == 0, "User has already entered. Only one entry allowed per address.");
         require(winnerHasNotBeenSet(), "Lottery has already completed. A winner was already selected.");
+        require(provableQueryHasNotRun(), "Winner selection already in progress. No entries allowed now.");
+        
         balances[msg.sender] = msg.value;
         entrants.push(msg.sender);
-        //TODO need to check lottery already completed
     }
+    
+    /*
+    function enterDebug1() external payable {
+        require(msg.sender == 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4, "debug, incorrect sender");
+    }*/
     
     function getLotteryBalance() public returns (uint256) {
        return address(this).balance;

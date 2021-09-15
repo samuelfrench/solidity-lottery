@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
     
-pragma solidity >=0.6.2 <0.9.0;
+pragma solidity 0.6.12;
 
 // This import is automatically injected by Remix
 import "remix_tests.sol"; 
@@ -11,16 +11,13 @@ import "remix_tests.sol";
 import "remix_accounts.sol";
 import "./LottoMock.sol";
 
-contract testSuite {
+contract lottoEntranceTest {
     
     //We need to use this "mock" object in order to modify internal states of the contract
     LottoMock lotto;
 
-    /// 'beforeAll' runs before all other tests
-    /// More special functions are: 'beforeEach', 'beforeAll', 'afterEach' & 'afterAll'
     function beforeEach() public {
         lotto = new LottoMock();
-        Assert.equal(uint(1), uint(1), "1 should be equal to 1");
     }
     
     //ENTRY test cases
@@ -136,6 +133,49 @@ contract testSuite {
         Assert.equal(lotto.getLotteryBalance(), uint256(500000000000000), "expecting lottery balance equal to entrance fee after entering");
         Assert.equal(lotto.getQuantityOfEntrants(), uint256(1), "user should have successfully entered the lottery");
     }
-    
-    ///case 7: multiple entrants
 }
+
+/*
+contract lottoMultipleEntranceTest {
+    
+    LottoMock lotto;
+    
+    /// #sender: account-0
+    /// #value: 500000000000000
+    function beforeEach() public payable {
+        lotto = new LottoMock();
+        
+        Assert.equal(lotto.getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
+        Assert.equal(lotto.getLotteryBalance(), uint256(0), "expecting 0 lottery balance before entering");
+        Assert.equal(msg.sender, TestsAccounts.getAccount(0), "Invalid sender");
+
+        
+        lotto.enter{value:500000000000000}();
+        
+        Assert.equal(lotto.getLotteryBalance(), uint256(500000000000000), "expecting lottery balance equal to entrance fee after entering");
+        Assert.equal(lotto.getQuantityOfEntrants(), uint256(1), "user should have successfully entered the lottery");
+    }
+    
+    //TODO: needs debugging https://stackoverflow.com/questions/69200464/solidity-unit-testing-isnt-using-the-correct-sender-to-call-the-function-under
+    ///case 7: multiple entrants
+    /// #sender: account-1
+    /// #value: 500000000000000
+    function enterSuccessfullyMultipleEntrants() public payable {
+        Assert.equal(lotto.getLotteryBalance(), uint256(500000000000000), "One user has already entered.");
+        Assert.equal(lotto.getQuantityOfEntrants(), uint256(1), "Expecting an existing entry.");
+        Assert.equal(msg.sender, TestsAccounts.getAccount(1), "Invalid sender");
+
+        //TODO - this is using account-0
+        try lotto.enterDebug1{value:500000000000000}() {
+            Assert.ok(false, 'succeed unexpected');
+        } catch Error(string memory reason) {
+            Assert.equal(reason, "debug", "debug.");
+        } catch (bytes memory) {
+            Assert.ok(false, 'failed unexpected');
+        }
+        
+        Assert.equal(lotto.getLotteryBalance(), uint256(1000000000000000), "expecting lottery balance equal to entrance fee for two users after entering");
+        Assert.equal(lotto.getQuantityOfEntrants(), uint256(2), "second user should have successfully entered the lottery");
+    }
+}*/
+
