@@ -90,8 +90,6 @@ contract testSuite {
     }
     
     ///case 4: lottery already completed -> then: return money, don't enter
-    /// #sender: account-0
-    /// #value: 500000000000000
     function enterWinnerAlreadySelected() public payable {
         Assert.equal(lotto.getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
         Assert.equal(lotto.getLotteryBalance(), uint256(0), "expecting 0 lottery balance before entering");
@@ -110,8 +108,6 @@ contract testSuite {
     }
     
     ///case 5: Winner selection in progress -> then: return money, don't enter
-    /// #sender: account-0
-    /// #value: 500000000000000
     function enterWinnerSelectionInProgress() public payable {
         Assert.equal(lotto.getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
         Assert.equal(lotto.getLotteryBalance(), uint256(0), "expecting 0 lottery balance before entering");
@@ -130,9 +126,7 @@ contract testSuite {
     }
     
     ///case 6: enter successfully
-    /// #sender: account-0
-    /// #value: 500000000000000
-    function enterSuccessfully() public payable {
+    function enterSuccessfullySingleEntrant() public payable {
         Assert.equal(lotto.getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
         Assert.equal(lotto.getLotteryBalance(), uint256(0), "expecting 0 lottery balance before entering");
 
