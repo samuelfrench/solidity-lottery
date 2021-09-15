@@ -9,17 +9,17 @@ import "remix_tests.sol";
 // Although it may fail compilation in 'Solidity Compiler' plugin
 // But it will work fine in 'Solidity Unit Testing' plugin
 import "remix_accounts.sol";
-import "../contracts/Lotto.sol";
+import "./LottoMock.sol";
 
-// File name has to end with '_test.sol', this file can contain more than one testSuite contracts
 contract testSuite {
     
-    Lotto lotto;
+    //We need to use this "mock" object in order to modify internal states of the contract
+    LottoMock lotto;
 
     /// 'beforeAll' runs before all other tests
     /// More special functions are: 'beforeEach', 'beforeAll', 'afterEach' & 'afterAll'
     function beforeEach() public {
-        lotto = new Lotto();
+        lotto = new LottoMock();
         Assert.equal(uint(1), uint(1), "1 should be equal to 1");
     }
     
@@ -90,6 +90,24 @@ contract testSuite {
     }
     
     ///case 4: lottery already completed -> then: return money, don't enter
+    /// #sender: account-0
+    /// #value: 500000000000000
+    function enterWinnerAlreadySelected() public payable {
+        Assert.equal(lotto.getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
+        Assert.equal(lotto.getLotteryBalance(), uint256(0), "expecting 0 lottery balance before entering");
+        lotto.setWinner();
+
+        try lotto.enter{value:500000000000000}() {
+            Assert.ok(false, 'succeed unexpected');
+        } catch Error(string memory reason) {
+            Assert.equal(reason, "Lottery has already completed. A winner was already selected.", "Lottery already completed. User cannot enter.");
+        } catch (bytes memory /*lowLevelData*/) {
+            Assert.ok(false, 'failed unexpected');
+        }
+        
+        Assert.equal(lotto.getLotteryBalance(), uint256(0), "expecting lottery balance equal to entrance fee after entering");
+        Assert.equal(lotto.getQuantityOfEntrants(), uint256(0), "user should have successfully entered the lottery");
+    }
     
     ///case 5: Winner selection in progress -> then: return money, don't enter
     

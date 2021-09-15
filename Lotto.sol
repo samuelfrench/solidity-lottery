@@ -14,6 +14,7 @@ contract Lotto is usingProvable {
     function enter() external payable {
         require(msg.value==entranceFee, "Invalid entry fee provided.");
         require(balances[msg.sender] == 0, "User has already entered. Only one entry allowed per address.");
+        require(winnerHasNotBeenSet(), "Lottery has already completed. A winner was already selected.");
         balances[msg.sender] = msg.value;
         entrants.push(msg.sender);
         //TODO need to check lottery already completed
