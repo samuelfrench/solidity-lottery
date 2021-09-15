@@ -28,7 +28,7 @@ contract testSuite {
     ///case 1: when: fee too much -> then: return money, don't enter
     /// #sender: account-0
     /// #value: 600000000000000
-    function entryFeeExceedsRequirement() public payable {
+    function enterEntryFeeExceedsRequirement() public payable {
         Assert.equal(lotto.getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
         Assert.equal(lotto.getLotteryBalance(), uint256(0), "expecting 0 lottery balance before entering");
 
@@ -49,7 +49,7 @@ contract testSuite {
     ///case 2: when: fee too little -> then: return money, don't enter
     /// #sender: account-0
     /// #value: 1000
-    function entryFeeTooLittle() public payable {
+    function enterEntryFeeTooLittle() public payable {
         Assert.equal(lotto.getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
         Assert.equal(lotto.getLotteryBalance(), uint256(0), "expecting 0 lottery balance before entering");
 
@@ -67,6 +67,27 @@ contract testSuite {
     }
     
     ///case 3: when already entered -> then: return money, don't enter
+    /// #sender: account-0
+    /// #value: 1000000000000000
+    function enterAlreadyEntered() public payable {
+        Assert.equal(lotto.getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
+        Assert.equal(lotto.getLotteryBalance(), uint256(0), "expecting 0 lottery balance before entering");
+        lotto.enter{value:500000000000000}();
+        Assert.equal(lotto.getLotteryBalance(), uint256(500000000000000), "expecting lottery balance equal to entrance fee after entering");
+        Assert.equal(lotto.getQuantityOfEntrants(), uint256(1), "user should have successfully entered the lottery");
+        
+                
+        try lotto.enter{value:500000000000000}() {
+            Assert.ok(false, 'succeed unexpected');
+        } catch Error(string memory reason) {
+            Assert.equal(reason, "User has already entered. Only one entry allowed per address.", "Expected failure, user has already entered.");
+        } catch (bytes memory /*lowLevelData*/) {
+            Assert.ok(false, 'failed unexpected');
+        }
+        
+        Assert.equal(lotto.getLotteryBalance(), uint256(500000000000000), "Lottery balance should be unchanged after failed entry");
+        Assert.equal(lotto.getQuantityOfEntrants(), uint256(1), "User has already entered, only expecting 1 entrant.");
+    }
     
     ///case 4: lottery already completed -> then: return money, don't enter
     
