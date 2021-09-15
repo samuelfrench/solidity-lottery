@@ -110,6 +110,24 @@ contract testSuite {
     }
     
     ///case 5: Winner selection in progress -> then: return money, don't enter
+    /// #sender: account-0
+    /// #value: 500000000000000
+    function enterWinnerSelectionInProgress() public payable {
+        Assert.equal(lotto.getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
+        Assert.equal(lotto.getLotteryBalance(), uint256(0), "expecting 0 lottery balance before entering");
+        lotto.setProvableQueryId();
+
+        try lotto.enter{value:500000000000000}() {
+            Assert.ok(false, 'succeed unexpected');
+        } catch Error(string memory reason) {
+            Assert.equal(reason, "Winner selection already in progress. No entries allowed now.", "Cannot enter lottery when winner selection is in progress.");
+        } catch (bytes memory /*lowLevelData*/) {
+            Assert.ok(false, 'failed unexpected');
+        }
+        
+        Assert.equal(lotto.getLotteryBalance(), uint256(0), "expecting lottery balance equal to entrance fee after entering");
+        Assert.equal(lotto.getQuantityOfEntrants(), uint256(0), "user should have successfully entered the lottery");
+    }
     
     ///case 6: enter successfully
     /// #sender: account-0

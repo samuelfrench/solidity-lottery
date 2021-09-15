@@ -8,4 +8,8 @@ contract LottoMock is Lotto {
         winner = msg.sender;
     }
     
+    function setProvableQueryId() public {
+        provableQueryId = bytes32("abc");
+    }
+    
 }
