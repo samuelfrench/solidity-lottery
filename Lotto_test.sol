@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
+
+// INSTRUCTIONS: Run this in the "Solidity Unit Testing Plugin" within the remix IDE
     
 pragma solidity 0.6.12;
 
@@ -135,7 +137,7 @@ contract lottoEntranceTest {
     }
 }
 
-/*
+/* this setup is not working, consider re-doing testing in truffle if I can't get this to work
 contract lottoMultipleEntranceTest {
     
     LottoMock lotto;
