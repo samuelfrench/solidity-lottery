@@ -12,12 +12,11 @@ contract Lotto is usingProvable {
     bytes32 provableQueryId;
     
     function enter() external payable {
-        //TODO can use a require here
-        if(balances[msg.sender] == 0 && msg.value==entranceFee){
-            balances[msg.sender] = msg.value;
-            entrants.push(msg.sender);
-        } //else you have not paid the entry fee or have already entered
-        //TODO need toc heck lottery already completed
+        require(msg.value==entranceFee, "Invalid entry fee provided.");
+        require(balances[msg.sender] == 0, "User has already entered. Only one entry allowed per address.");
+        balances[msg.sender] = msg.value;
+        entrants.push(msg.sender);
+        //TODO need to check lottery already completed
     }
     
     function getLotteryBalance() public returns (uint256) {
