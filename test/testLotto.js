@@ -21,4 +21,6 @@ contract("Lotto", async accounts => {
     let entrantCountAfter = await instance.getQuantityOfEntrants.call()
     assert.equal(entrantCountAfter, 1);
   });
+
+  //TODO: re-write tests from Lotto_test.sol
 });
