@@ -60,6 +60,7 @@ contract Lotto is usingProvable {
     
     //provable callback for selectWinner function (this takes a while to be called)
     function __callback(bytes32 myid, string memory result) public override {
+        //TODO validate sender
         if(myid != provableQueryId) revert();
         winner = entrants[parseInt(result)];
         distributeWinnings();
