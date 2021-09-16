@@ -1,7 +1,7 @@
 pragma solidity 0.6.12;
 import "./provableAPI.sol";
 
-//TODO setup build system (truffle)
+//TODO stop using provable (switch to chainlink)
 contract Lotto is usingProvable {
     address payable[] public entrants;
     mapping(address => uint) public balances;
@@ -9,8 +9,10 @@ contract Lotto is usingProvable {
     uint256 public moneyDistributedDebug = 3;
     
     address payable public winner;
+
     bytes32 provableQueryId;
-    constructor() public {}
+    event LogWinnerSelectionStarted(string message);
+    event LogWinnerSelected(address winner);
     
     function enter() external payable {
         require(msg.value==entranceFee, "Invalid entry fee provided.");
@@ -21,7 +23,7 @@ contract Lotto is usingProvable {
         balances[msg.sender] = msg.value;
         entrants.push(msg.sender);
     }
-    
+
     /*
     function enterDebug1() external payable {
         require(msg.sender == 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4, "debug, incorrect sender");
@@ -40,6 +42,7 @@ contract Lotto is usingProvable {
         require(winnerHasNotBeenSet(), "Winner has already been selected");
         require(provableQueryHasNotRun(), "Winner selection already in progress.");
         provableQueryId = provable_query("WolframAlpha", constructProvableQuery()); //TODO switch to more secure source
+        emit LogWinnerSelectionStarted("Winner selection has started!" );
         //__callback function is activated
     }
     
@@ -50,7 +53,7 @@ contract Lotto is usingProvable {
     function provableQueryHasNotRun() private view returns (bool){
         return provableQueryId == 0;
     }
-    
+
     function constructProvableQuery() private view returns (string memory){
         return strConcat("random number between 0 and ", uint2str(entrants.length-1));
     }
@@ -60,6 +63,7 @@ contract Lotto is usingProvable {
         if(myid != provableQueryId) revert();
         winner = entrants[parseInt(result)];
         distributeWinnings();
+        emit LogWinnerSelected(winner);
     }
     
     //TODO move to new file and restrict visibility
