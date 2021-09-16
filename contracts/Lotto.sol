@@ -1,5 +1,5 @@
 pragma solidity 0.6.12;
-import "github.com/provable-things/ethereum-api/provableAPI_0.6.sol";
+import "./provableAPI.sol";
 
 //TODO setup build system (truffle)
 contract Lotto is usingProvable {
