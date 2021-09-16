@@ -34,12 +34,13 @@ contract Lotto is usingProvable {
     function getQuantityOfEntrants() public view returns(uint count) {
         return entrants.length;
     }
-    
+
+    //TODO restrict who can call this
     function selectWinner() public {
-        if(winnerHasNotBeenSet() && provableQueryHasNotRun()){ //could this get stuck and prevent the money from being distributed? add a back-door for creator?
-            provableQueryId = provable_query("WolframAlpha", constructProvableQuery()); //TODO switch to more secure source
-            //__callback function is activated
-        }
+        require(winnerHasNotBeenSet(), "Winner has already been selected");
+        require(provableQueryHasNotRun(), "Winner selection already in progress.");
+        provableQueryId = provable_query("WolframAlpha", constructProvableQuery()); //TODO switch to more secure source
+        //__callback function is activated
     }
     
     function winnerHasNotBeenSet() private view returns (bool){
