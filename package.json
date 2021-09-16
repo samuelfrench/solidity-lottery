@@ -1,0 +1,26 @@
+{
+  "name": "solidity-lottery",
+  "version": "1.0.0",
+  "description": "install Ganache locally truffle migrate",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "truffle-assertions": "^0.9.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "truffle test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samuelfrench/solidity-lottery.git"
+  },
+  "author": "Sam French",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/samuelfrench/solidity-lottery/issues"
+  },
+  "homepage": "https://github.com/samuelfrench/solidity-lottery#readme"
+}
