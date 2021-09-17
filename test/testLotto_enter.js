@@ -1,95 +1,96 @@
 const truffleAssert = require('truffle-assertions');
-const Lotto = artifacts.require("Lotto");
 
-//TODO: Format file - use eslint
-contract("Lotto", async accounts => {
+const Lotto = artifacts.require('Lotto');
 
-    let lotto;
+// TODO: Format file - use eslint
+contract('Lotto', async (accounts) => {
+  let lotto;
 
-    //TODO could this be a promise?
-    const waitForEvent = async (eventName) => {
-        let events = await lotto.getPastEvents( eventName, { fromBlock: 0, toBlock: 'latest' } )
-        let secondCounter = 0;
-        const sleep = ms => new Promise(res => setTimeout(res, ms));
-        while(events.length < 1){
-            console.log("waiting for event");
-            await sleep(1000);
-            secondCounter++;
-            events = await lotto.getPastEvents( eventName, { fromBlock: 0, toBlock: 'latest' } )
-            if(secondCounter > 100){
-                assert(false);
-            }
-        }
-    };
+  // TODO could this be a promise?
+  // TODO move to common util
+  const waitForEvent = async (eventName) => {
+    let events = await lotto.getPastEvents(eventName, { fromBlock: 0, toBlock: 'latest' });
+    let secondCounter = 0;
+    const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+    while (events.length < 1) {
+      console.log('waiting for event');
+      await sleep(1000);
+      secondCounter++;
+      events = await lotto.getPastEvents(eventName, { fromBlock: 0, toBlock: 'latest' });
+      if (secondCounter > 100) {
+        assert(false);
+      }
+    }
+  };
 
-    beforeEach(async () => {
-        lotto = await Lotto.new();
+  beforeEach(async () => {
+    lotto = await Lotto.new();
 
-        let balanceBefore = await lotto.getLotteryBalance.call();
-        assert.equal(balanceBefore, 0);
-        let entrantCountBefore = await lotto.getQuantityOfEntrants.call();
-        assert.equal(entrantCountBefore, 0);
-    });
+    const balanceBefore = await lotto.getLotteryBalance.call();
+    assert.equal(balanceBefore, 0);
+    const entrantCountBefore = await lotto.getQuantityOfEntrants.call();
+    assert.equal(entrantCountBefore, 0);
+  });
 
-  it("allows lottery entry", async () => {
-    await lotto.enter({value: 500000000000000}); //TODO is this variable used
+  it('allows lottery entry', async () => {
+    await lotto.enter({ value: 500000000000000 }); // TODO is this variable used
 
-    let balanceAfter = await lotto.getLotteryBalance.call();
+    const balanceAfter = await lotto.getLotteryBalance.call();
     assert.equal(balanceAfter, 500000000000000);
-    let entrantCountAfter = await lotto.getQuantityOfEntrants.call();
+    const entrantCountAfter = await lotto.getQuantityOfEntrants.call();
     assert.equal(entrantCountAfter, 1);
   });
 
-    it("allows lottery entry with multiple entrants", async () => {
-      await lotto.enter({value: 500000000000000});
-      await lotto.enter({value: 500000000000000, from: accounts[1]});
+  it('allows lottery entry with multiple entrants', async () => {
+    await lotto.enter({ value: 500000000000000 });
+    await lotto.enter({ value: 500000000000000, from: accounts[1] });
 
-      let balanceAfter = await lotto.getLotteryBalance.call();
-      assert.equal(balanceAfter, 1000000000000000);
-      let entrantCountAfter = await lotto.getQuantityOfEntrants.call();
-      assert.equal(entrantCountAfter, 2);
-    });
+    const balanceAfter = await lotto.getLotteryBalance.call();
+    assert.equal(balanceAfter, 1000000000000000);
+    const entrantCountAfter = await lotto.getQuantityOfEntrants.call();
+    assert.equal(entrantCountAfter, 2);
+  });
 
-  it("prevents lottery entry if insufficient entry fee provided", async() => {
-    await truffleAssert.reverts(lotto.enter({value: 400000000000000}), "Invalid entry fee provided.");
+  it('prevents lottery entry if insufficient entry fee provided', async () => {
+    await truffleAssert.reverts(lotto.enter({ value: 400000000000000 }), 'Invalid entry fee provided.');
 
-    let balanceAfter = await lotto.getLotteryBalance.call();
+    const balanceAfter = await lotto.getLotteryBalance.call();
     assert.equal(balanceAfter, 0);
-    let entrantCountAfter = await lotto.getQuantityOfEntrants.call();
+    const entrantCountAfter = await lotto.getQuantityOfEntrants.call();
     assert.equal(entrantCountAfter, 0);
   });
 
-    it("prevents lottery entry if entry fee provided is greater than what's required", async() => {
-      await truffleAssert.reverts(lotto.enter({value: 600000000000000}), "Invalid entry fee provided.");
+  it("prevents lottery entry if entry fee provided is greater than what's required", async () => {
+    await truffleAssert.reverts(lotto.enter({ value: 600000000000000 }), 'Invalid entry fee provided.');
 
-      let balanceAfter = await lotto.getLotteryBalance.call();
-      assert.equal(balanceAfter, 0);
-      let entrantCountAfter = await lotto.getQuantityOfEntrants.call();
-      assert.equal(entrantCountAfter, 0);
-    });
+    const balanceAfter = await lotto.getLotteryBalance.call();
+    assert.equal(balanceAfter, 0);
+    const entrantCountAfter = await lotto.getQuantityOfEntrants.call();
+    assert.equal(entrantCountAfter, 0);
+  });
 
-    it("prevents lottery entry if the address has already been entered into the lottery", async() => {
-        let enterResult = await lotto.enter({value: 500000000000000});
+  it('prevents lottery entry if the address has already been entered into the lottery', async () => {
+    const enterResult = await lotto.enter({ value: 500000000000000 });
 
-        await truffleAssert.reverts(lotto.enter({value: 500000000000000}), "User has already entered. Only one entry allowed per address.");
-    });
+    await truffleAssert.reverts(lotto.enter({ value: 500000000000000 }), 'User has already entered. Only one entry allowed per address.');
+  });
 
-    it("prevents entry into the lottery if winner selection is in progress", async() => {
-        let enterResult = await lotto.enter({value: 500000000000000});
-        await lotto.selectWinner();
+  it('prevents entry into the lottery if winner selection is in progress', async () => {
+    const enterResult = await lotto.enter({ value: 500000000000000 });
+    await lotto.selectWinner();
 
-        await truffleAssert.reverts(lotto.enter({value: 500000000000000, from: accounts[1]}),
-            "Winner selection already in progress. No entries allowed now.");
-    });
+    await truffleAssert.reverts(lotto.enter({ value: 500000000000000, from: accounts[1] }),
+      'Winner selection already in progress. No entries allowed now.');
+  });
 
-    it("prevents entry into the lottery once a winner has already been selected", async() => {
-        await lotto.enter({value: 500000000000000});
-        let selectWinnerResult = await lotto.selectWinner();
-        await truffleAssert.eventEmitted(selectWinnerResult, 'LogWinnerSelectionStarted');
-        await waitForEvent('LogWinnerSelected');
+  it('prevents entry into the lottery once a winner has already been selected', async () => {
+    await lotto.enter({ value: 500000000000000 });
+    const selectWinnerResult = await lotto.selectWinner();
+    await truffleAssert.eventEmitted(selectWinnerResult, 'LogWinnerSelectionStarted');
+    await waitForEvent('LogWinnerSelected');
 
-        await truffleAssert.reverts(lotto.enter({value: 500000000000000, from: accounts[1]}),
-                    "Lottery has already completed. A winner was already selected.");
-    });
+    await truffleAssert.reverts(lotto.enter({ value: 500000000000000, from: accounts[1] }),
+      'Lottery has already completed. A winner was already selected.');
+  });
 });
-//TODO: test remaining functionality
+// TODO: test remaining functionality
