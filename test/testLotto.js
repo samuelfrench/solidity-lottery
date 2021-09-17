@@ -7,6 +7,22 @@ contract("Lotto", async accounts => {
 
     let lotto;
 
+    //TODO could this be a promise?
+    async function waitForEvent(eventName) {
+        let events = await lotto.getPastEvents( eventName, { fromBlock: 0, toBlock: 'latest' } )
+        let secondCounter = 0;
+        const sleep = ms => new Promise(res => setTimeout(res, ms));
+        while(events.length < 1){
+            console.log("waiting for event");
+            await sleep(1000);
+            secondCounter++;
+            events = await lotto.getPastEvents( eventName, { fromBlock: 0, toBlock: 'latest' } )
+            if(secondCounter > 100){
+                assert(false);
+            }
+        }
+    }
+
     beforeEach(async () => {
         lotto = await Lotto.new();
 
@@ -59,31 +75,15 @@ contract("Lotto", async accounts => {
             "Winner selection already in progress. No entries allowed now.");
     });
 
-    //TODO clean this up
     it("prevents entry into the lottery once a winner has already been selected", async() => {
         let enterResult = await lotto.enter({value: 500000000000000});
-
         let result = await lotto.selectWinner();
-
         await truffleAssert.eventEmitted(result, 'LogWinnerSelectionStarted');
-
-        let events = await lotto.getPastEvents( 'LogWinnerSelected', { fromBlock: 0, toBlock: 'latest' } )
-
-        let secondCounter = 0;
-        const sleep = ms => new Promise(res => setTimeout(res, ms));
-        while(events.length < 1){
-            console.log("polling for winner selected event");
-            await sleep(1000);
-            secondCounter++;
-            events = await lotto.getPastEvents( 'LogWinnerSelected', { fromBlock: 0, toBlock: 'latest' } )
-            if(secondCounter > 100){
-                assert(false);
-            }
-        }
+        await waitForEvent('LogWinnerSelected');
 
         await truffleAssert.reverts(lotto.enter({value: 500000000000000, from: accounts[1]}),
                     "Lottery has already completed. A winner was already selected.");
     });
 
-  //TODO: re-write tests from Lotto_test.sol
+    //TODO: Test case demonstrating multiple entrants
 });
