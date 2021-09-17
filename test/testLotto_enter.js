@@ -1,8 +1,7 @@
 const truffleAssert = require('truffle-assertions');
 const Lotto = artifacts.require("Lotto");
 
-//TODO: Format file
-
+//TODO: Format file - use eslint
 contract("Lotto", async accounts => {
 
     let lotto;
@@ -33,13 +32,23 @@ contract("Lotto", async accounts => {
     });
 
   it("allows lottery entry", async () => {
-    let enterResult = await lotto.enter({value: 500000000000000}); //TODO is this variable used
+    await lotto.enter({value: 500000000000000}); //TODO is this variable used
 
     let balanceAfter = await lotto.getLotteryBalance.call();
     assert.equal(balanceAfter, 500000000000000);
     let entrantCountAfter = await lotto.getQuantityOfEntrants.call();
     assert.equal(entrantCountAfter, 1);
   });
+
+    it("allows lottery entry with multiple entrants", async () => {
+      await lotto.enter({value: 500000000000000});
+      await lotto.enter({value: 500000000000000, from: accounts[1]});
+
+      let balanceAfter = await lotto.getLotteryBalance.call();
+      assert.equal(balanceAfter, 1000000000000000);
+      let entrantCountAfter = await lotto.getQuantityOfEntrants.call();
+      assert.equal(entrantCountAfter, 2);
+    });
 
   it("prevents lottery entry if insufficient entry fee provided", async() => {
     await truffleAssert.reverts(lotto.enter({value: 400000000000000}), "Invalid entry fee provided.");
@@ -74,15 +83,13 @@ contract("Lotto", async accounts => {
     });
 
     it("prevents entry into the lottery once a winner has already been selected", async() => {
-        let enterResult = await lotto.enter({value: 500000000000000});
-        let result = await lotto.selectWinner();
-        await truffleAssert.eventEmitted(result, 'LogWinnerSelectionStarted');
+        await lotto.enter({value: 500000000000000});
+        let selectWinnerResult = await lotto.selectWinner();
+        await truffleAssert.eventEmitted(selectWinnerResult, 'LogWinnerSelectionStarted');
         await waitForEvent('LogWinnerSelected');
 
         await truffleAssert.reverts(lotto.enter({value: 500000000000000, from: accounts[1]}),
                     "Lottery has already completed. A winner was already selected.");
     });
-
-    //TODO: Test case demonstrating multiple entrants
 });
 //TODO: test remaining functionality
