@@ -8,7 +8,7 @@ contract("Lotto", async accounts => {
     let lotto;
 
     //TODO could this be a promise?
-    async function waitForEvent(eventName) {
+    const waitForEvent = async (eventName) => {
         let events = await lotto.getPastEvents( eventName, { fromBlock: 0, toBlock: 'latest' } )
         let secondCounter = 0;
         const sleep = ms => new Promise(res => setTimeout(res, ms));
@@ -21,7 +21,7 @@ contract("Lotto", async accounts => {
                 assert(false);
             }
         }
-    }
+    };
 
     beforeEach(async () => {
         lotto = await Lotto.new();
