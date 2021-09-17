@@ -86,9 +86,4 @@ contract("Lotto", async accounts => {
     });
 
   //TODO: re-write tests from Lotto_test.sol
-  const getFirstEvent = (_event) => {
-    return new Promise((resolve, reject) => {
-      _event.once('data', resolve).once('error', reject)
-    });
-  }
 });
