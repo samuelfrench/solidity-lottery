@@ -23,11 +23,6 @@ contract Lotto is usingProvable {
         balances[msg.sender] = msg.value;
         entrants.push(msg.sender);
     }
-
-    /*
-    function enterDebug1() external payable {
-        require(msg.sender == 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4, "debug, incorrect sender");
-    }*/
     
     function getLotteryBalance() public returns (uint256) {
        return address(this).balance;
