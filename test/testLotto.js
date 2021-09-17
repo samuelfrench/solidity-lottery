@@ -41,8 +41,6 @@ contract("Lotto", async accounts => {
     assert.equal(entrantCountAfter, 1);
   });
 
-
-
   it("prevents lottery entry if insufficient entry fee provided", async() => {
     await truffleAssert.reverts(lotto.enter({value: 400000000000000}), "Invalid entry fee provided.");
 
@@ -87,3 +85,4 @@ contract("Lotto", async accounts => {
 
     //TODO: Test case demonstrating multiple entrants
 });
+//TODO: test remaining functionality
