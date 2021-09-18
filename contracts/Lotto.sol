@@ -5,7 +5,7 @@ import "./provableAPI.sol";
 contract Lotto is usingProvable {
     address payable[] public entrants;
     mapping(address => uint) public balances;
-    uint256 public entranceFee = 500000000000000; //50000; //wei
+    uint256 public entranceFee = 500000000000000; //wei
     uint256 public moneyDistributedDebug = 3;
     
     address payable public winner;
