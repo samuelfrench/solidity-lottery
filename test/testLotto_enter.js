@@ -1,27 +1,11 @@
 const truffleAssert = require('truffle-assertions');
+const { waitForEvent } = require('./utils')
 
 const Lotto = artifacts.require('Lotto');
 
 // TODO: Format file - use eslint
 contract('Lotto', async (accounts) => {
   let lotto;
-
-  // TODO could this be a promise?
-  // TODO move to common util
-  const waitForEvent = async (eventName) => {
-    let events = await lotto.getPastEvents(eventName, { fromBlock: 0, toBlock: 'latest' });
-    let secondCounter = 0;
-    const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
-    while (events.length < 1) {
-      console.log('waiting for event');
-      await sleep(1000);
-      secondCounter++;
-      events = await lotto.getPastEvents(eventName, { fromBlock: 0, toBlock: 'latest' });
-      if (secondCounter > 100) {
-        assert(false);
-      }
-    }
-  };
 
   beforeEach(async () => {
     lotto = await Lotto.new();
@@ -87,10 +71,9 @@ contract('Lotto', async (accounts) => {
     await lotto.enter({ value: 500000000000000 });
     const selectWinnerResult = await lotto.selectWinner();
     await truffleAssert.eventEmitted(selectWinnerResult, 'LogWinnerSelectionStarted');
-    await waitForEvent('LogWinnerSelected');
+    await waitForEvent('LogWinnerSelected', lotto);
 
     await truffleAssert.reverts(lotto.enter({ value: 500000000000000, from: accounts[1] }),
       'Lottery has already completed. A winner was already selected.');
   });
 });
-// TODO: test remaining functionality
