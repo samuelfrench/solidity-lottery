@@ -17,7 +17,7 @@ contract('Lotto', async (accounts) => {
   });
 
   it('allows lottery entry', async () => {
-    await lotto.enter({ value: 500000000000000 }); // TODO is this variable used
+    await lotto.enter({ value: 500000000000000 });
 
     const balanceAfter = await lotto.getLotteryBalance.call();
     assert.equal(balanceAfter, 500000000000000);
