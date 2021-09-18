@@ -3,7 +3,6 @@ const { waitForEvent } = require('./utils')
 
 const Lotto = artifacts.require('Lotto');
 
-// TODO: Format file - use eslint
 contract('Lotto', async (accounts) => {
   let lotto;
 
@@ -17,7 +16,7 @@ contract('Lotto', async (accounts) => {
   });
 
   it('allows lottery entry', async () => {
-    await lotto.enter({ value: 500000000000000 });
+    await lotto.enter({ value: 500000000000000 }); //TODO don't hardcode this, use a lib function or add a constant
 
     const balanceAfter = await lotto.getLotteryBalance.call();
     assert.equal(balanceAfter, 500000000000000);
