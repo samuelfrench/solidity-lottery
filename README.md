@@ -4,5 +4,5 @@
 //truffle migrate
 
 truffle develop
-npm run bridge
+npm run bridge (get address resolver id and replace in Lotto.sol constructor)
 (in truffle console: test)

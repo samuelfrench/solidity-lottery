@@ -13,6 +13,10 @@ contract Lotto is usingProvable {
     bytes32 provableQueryId;
     event LogWinnerSelectionStarted(string message);
     event LogWinnerSelected(address winner);
+
+    constructor () public{
+        OAR = OracleAddrResolverI(0xf1E0658Dd4218b146718ada57b962B5f44725eEA);
+    }
     
     function enter() external payable {
         require(msg.value==entranceFee, "Invalid entry fee provided.");
