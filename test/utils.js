@@ -1,3 +1,5 @@
+const Web3 = require('web3');
+
 module.exports.waitForEvent = async (eventName, contract) => {
                                 let events = await contract.getPastEvents(eventName, { fromBlock: 0, toBlock: 'latest' });
                                 let secondCounter = 0;
@@ -12,3 +14,5 @@ module.exports.waitForEvent = async (eventName, contract) => {
                                   }
                                 }
                               };
+
+module.exports.validEnterValue = Web3.utils.toWei('500000', 'gwei');

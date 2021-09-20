@@ -1,12 +1,10 @@
 const truffleAssert = require('truffle-assertions');
-const Web3 = require('web3');
-const { waitForEvent } = require('./utils')
+const { waitForEvent, validEnterValue } = require('./utils')
 
 const Lotto = artifacts.require('Lotto');
 
 contract('Lotto', async (accounts) => {
   let lotto;
-  const validEnterValue = Web3.utils.toWei('500000', 'gwei');
 
   beforeEach(async () => {
     lotto = await Lotto.new();
@@ -21,7 +19,7 @@ contract('Lotto', async (accounts) => {
     await lotto.enter({ value: validEnterValue});
 
     const balanceAfter = await lotto.getLotteryBalance.call();
-    assert.equal(balanceAfter, 500000000000000);
+    assert.equal(balanceAfter, validEnterValue);
     const entrantCountAfter = await lotto.getQuantityOfEntrants.call();
     assert.equal(entrantCountAfter, 1);
   });
