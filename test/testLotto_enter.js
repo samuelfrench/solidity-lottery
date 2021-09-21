@@ -15,6 +15,7 @@ contract('Lotto', async (accounts) => {
     assert.equal(entrantCountBefore, 0);
   });
 
+  // BEGIN ENTRY RELATED TESTS
   it('allows lottery entry', async () => {
     await lotto.enter({ value: validEntryValue });
 
@@ -77,28 +78,40 @@ contract('Lotto', async (accounts) => {
   });
 
   // Note: Truffle (or provable bridge) doesn't work well with a single contract having multiple test files TODO reproduce and file bug report
+  // BEGIN WINNER SELECTION RELATED TESTS
+
   it('allows winner selection with a single entrant and distributes the funds', async () => {
-    //given
+    // given
     await lotto.enter({ value: validEntryValue, from: accounts[1] });
     const startingContractBalance = await lotto.getLotteryBalance.call();
-    const winnerBalanceBefore = await web3.eth.getBalance(accounts[1]); //after entering but before winning
+    const winnerBalanceBefore = await web3.eth.getBalance(accounts[1]); // after entering but before winning
     const startingEntrantCount = await lotto.getQuantityOfEntrants.call();
 
     assert.equal(startingContractBalance, validEntryValue);
     assert.equal(startingEntrantCount, 1);
 
-    //when
+    // when
     const selectWinnerResult = await lotto.selectWinner();
     await truffleAssert.eventEmitted(selectWinnerResult, 'LogWinnerSelectionStarted');
     await waitForEvent('LogWinnerSelected', lotto);
 
-    //then - TODO cleanup into helper functions
+    // then - TODO cleanup into helper functions
     const completedContractBalance = await lotto.getLotteryBalance.call();
     const winnerBalanceAfter = await web3.eth.getBalance(accounts[1]);
 
     assert.equal(completedContractBalance, 0);
-    //balance after winning should equal balance before winning + entry fee for 1 user
+    // balance after winning should equal balance before winning + entry fee for 1 user
     assert.equal(parseInt(winnerBalanceAfter), parseInt(winnerBalanceBefore) + parseInt(validEntryValue),
-        "Winner account balance incorrect after lottery completion.");
+      'Winner account balance incorrect after lottery completion.');
   });
+
+  // TODO: Happy path - money distributed to winner 2 entrant
+
+  // TODO: Winner selection already in progress, cannot select winner
+
+  // TODO: Winner already selected, cannot select winner
+
+  // TODO: Nobody has entered yet, cannot select winner
+
+  // TODO: Callback function called from incorrect account, transaction reverted
 });
