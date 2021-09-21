@@ -5,7 +5,7 @@ import "./provableAPI.sol";
 contract Lotto is usingProvable {
     address payable[] public entrants;
     mapping(address => uint) public balances;
-    uint256 public entranceFee = 500000000000000; //wei
+    uint256 public entranceFee = 5000000000000000; //wei
     uint256 public moneyDistributedDebug = 3;
     
     address payable public winner;
@@ -15,7 +15,7 @@ contract Lotto is usingProvable {
     event LogWinnerSelected(address winner);
 
     constructor () public{
-        OAR = OracleAddrResolverI(0xf1E0658Dd4218b146718ada57b962B5f44725eEA);
+        OAR = OracleAddrResolverI(0x830BB03730703B7a98FEEE134fC33EAc645ae59E);
     }
     
     function enter() external payable {
