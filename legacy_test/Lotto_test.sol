@@ -137,6 +137,7 @@ contract lottoEntranceTest {
     }
 }
 
+//TODO bug report: https://github.com/ethereum/remix-project/issues/1618
 /* this setup is not working, consider re-doing testing in truffle if I can't get this to work
 contract lottoMultipleEntranceTest {
     
