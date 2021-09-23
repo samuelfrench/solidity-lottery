@@ -6,6 +6,16 @@ const Lotto = artifacts.require('Lotto');
 contract('Lotto', async (accounts) => {
   let lotto;
 
+  // helpers
+  async function enterIntoLottoAndVerifyContractState(entrant) {
+    await lotto.enter({ value: validEntryValue, from: entrant });
+    const entrantCount = await lotto.getQuantityOfEntrants.call();
+    assert.equal(entrantCount, 1);
+
+    const contractBalance = await lotto.getLotteryBalance.call();
+    assert.equal(contractBalance, validEntryValue);
+  }
+
   beforeEach(async () => {
     lotto = await Lotto.new();
 
@@ -82,13 +92,8 @@ contract('Lotto', async (accounts) => {
 
   it('allows winner selection with a single entrant and distributes the funds', async () => {
     // given
-    await lotto.enter({ value: validEntryValue, from: accounts[1] });
-    const startingContractBalance = await lotto.getLotteryBalance.call();
+    await enterIntoLottoAndVerifyContractState(accounts[1]);
     const winnerBalanceBefore = await web3.eth.getBalance(accounts[1]); // after entering but before winning
-    const startingEntrantCount = await lotto.getQuantityOfEntrants.call();
-
-    assert.equal(startingContractBalance, validEntryValue);
-    assert.equal(startingEntrantCount, 1);
 
     // when
     const selectWinnerResult = await lotto.selectWinner();
