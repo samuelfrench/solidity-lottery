@@ -7,13 +7,13 @@ contract('Lotto', async (accounts) => {
   let lotto;
 
   // helpers
-  async function enterIntoLottoAndVerifyContractState(entrant) {
+  async function enterIntoLottoAndVerifyContractState(entrant, expectedEntrantCount = 1) {
     await lotto.enter({ value: validEntryValue, from: entrant });
     const entrantCount = await lotto.getQuantityOfEntrants.call();
-    assert.equal(entrantCount, 1);
+    assert.equal(entrantCount, expectedEntrantCount);
 
     const contractBalance = await lotto.getLotteryBalance.call();
-    assert.equal(contractBalance, validEntryValue);
+    assert.equal(contractBalance, validEntryValue * expectedEntrantCount);
   }
 
   beforeEach(async () => {
@@ -27,7 +27,7 @@ contract('Lotto', async (accounts) => {
 
   // BEGIN ENTRY RELATED TESTS
   it('allows lottery entry', async () => {
-    await lotto.enter({ value: validEntryValue });
+    await enterIntoLottoAndVerifyContractState(accounts[0]);
 
     const balanceAfter = await lotto.getLotteryBalance.call();
     assert.equal(balanceAfter, validEntryValue);
@@ -36,8 +36,8 @@ contract('Lotto', async (accounts) => {
   });
 
   it('allows lottery entry with multiple entrants', async () => {
-    await lotto.enter({ value: validEntryValue });
-    await lotto.enter({ value: validEntryValue, from: accounts[1] });
+    await enterIntoLottoAndVerifyContractState(accounts[0]);
+    await enterIntoLottoAndVerifyContractState(accounts[1], expectedEntrantCount = 2);
 
     const balanceAfter = await lotto.getLotteryBalance.call();
     assert.equal(balanceAfter, validEntryValue * 2);
