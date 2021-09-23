@@ -7,13 +7,19 @@ contract('Lotto', async (accounts) => {
   let lotto;
 
   // helpers
-  async function enterIntoLottoAndVerifyContractState(entrant, expectedEntrantCount = 1) {
+  async function enterIntoLottoAndVerifyContractState(entrant = accounts[0], expectedEntrantCount = 1) {
     await lotto.enter({ value: validEntryValue, from: entrant });
     const entrantCount = await lotto.getQuantityOfEntrants.call();
     assert.equal(entrantCount, expectedEntrantCount);
 
     const contractBalance = await lotto.getLotteryBalance.call();
     assert.equal(contractBalance, validEntryValue * expectedEntrantCount);
+  }
+
+  async function selectWinnerAndWaitForCompletion() {
+    const selectWinnerResult = await lotto.selectWinner();
+    await truffleAssert.eventEmitted(selectWinnerResult, 'LogWinnerSelectionStarted');
+    await waitForEvent('LogWinnerSelected', lotto);
   }
 
   beforeEach(async () => {
@@ -27,16 +33,16 @@ contract('Lotto', async (accounts) => {
 
   // BEGIN ENTRY RELATED TESTS
   it('allows lottery entry', async () => {
-    await enterIntoLottoAndVerifyContractState(accounts[0]);
+    await enterIntoLottoAndVerifyContractState();
 
-    const balanceAfter = await lotto.getLotteryBalance.call();
+    const balanceAfter = await lotto.getLotteryBalance.call(); // TODO break out into another helper function
     assert.equal(balanceAfter, validEntryValue);
     const entrantCountAfter = await lotto.getQuantityOfEntrants.call();
     assert.equal(entrantCountAfter, 1);
   });
 
   it('allows lottery entry with multiple entrants', async () => {
-    await enterIntoLottoAndVerifyContractState(accounts[0]);
+    await enterIntoLottoAndVerifyContractState();
     await enterIntoLottoAndVerifyContractState(accounts[1], expectedEntrantCount = 2);
 
     const balanceAfter = await lotto.getLotteryBalance.call();
@@ -64,13 +70,13 @@ contract('Lotto', async (accounts) => {
   });
 
   it('prevents lottery entry if the address has already been entered into the lottery', async () => {
-    const enterResult = await lotto.enter({ value: validEntryValue });
+    await enterIntoLottoAndVerifyContractState();
 
     await truffleAssert.reverts(lotto.enter({ value: validEntryValue }), 'User has already entered. Only one entry allowed per address.');
   });
 
   it('prevents entry into the lottery if winner selection is in progress', async () => {
-    const enterResult = await lotto.enter({ value: validEntryValue });
+    await enterIntoLottoAndVerifyContractState();
     await lotto.selectWinner();
 
     await truffleAssert.reverts(lotto.enter({ value: validEntryValue, from: accounts[1] }),
@@ -78,10 +84,8 @@ contract('Lotto', async (accounts) => {
   });
 
   it('prevents entry into the lottery once a winner has already been selected', async () => {
-    await lotto.enter({ value: validEntryValue });
-    const selectWinnerResult = await lotto.selectWinner();
-    await truffleAssert.eventEmitted(selectWinnerResult, 'LogWinnerSelectionStarted');
-    await waitForEvent('LogWinnerSelected', lotto);
+    await enterIntoLottoAndVerifyContractState();
+    await selectWinnerAndWaitForCompletion();
 
     await truffleAssert.reverts(lotto.enter({ value: validEntryValue, from: accounts[1] }),
       'Lottery has already completed. A winner was already selected.');
@@ -96,9 +100,7 @@ contract('Lotto', async (accounts) => {
     const winnerBalanceBefore = await web3.eth.getBalance(accounts[1]); // after entering but before winning
 
     // when
-    const selectWinnerResult = await lotto.selectWinner();
-    await truffleAssert.eventEmitted(selectWinnerResult, 'LogWinnerSelectionStarted');
-    await waitForEvent('LogWinnerSelected', lotto);
+    await selectWinnerAndWaitForCompletion();
 
     // then - TODO cleanup into helper functions
     const completedContractBalance = await lotto.getLotteryBalance.call();
