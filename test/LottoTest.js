@@ -117,11 +117,20 @@ contract('Lotto', async (accounts) => {
 
   // TODO: Happy path - money distributed to winner 2 entrant
 
+  // TODO: Nobody has entered yet, cannot select winner
+  it('prevents kicking off winner selection if there are no entrants', async () => {
+    await truffleAssert.reverts(lotto.selectWinner(), 'Requires at least one entrant to select a winner.');
+  })
+
   // TODO: Winner selection already in progress, cannot select winner
+  it('prevents kicking off winner selection if winner selection is already in progress', async () => {
+    await enterIntoLottoAndVerifyContractState();
+    await lotto.selectWinner();
+
+    await truffleAssert.reverts(lotto.selectWinner(), 'Winner selection already in progress.');
+  })
 
   // TODO: Winner already selected, cannot select winner
-
-  // TODO: Nobody has entered yet, cannot select winner
 
   // TODO: Callback function called from incorrect account, transaction reverted
 });
