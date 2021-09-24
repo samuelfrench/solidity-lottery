@@ -137,7 +137,7 @@ contract lottoEntranceTest {
     }
 }
 
-//TODO bug report: https://github.com/ethereum/remix-project/issues/1618
+//TODO bug report: https://github.com/ethereum/remix-project/issues/1618 - this works just need to inherit from original contract and not instansiate it
 /* this setup is not working, consider re-doing testing in truffle if I can't get this to work
 contract lottoMultipleEntranceTest {
     

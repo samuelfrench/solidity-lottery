@@ -15,7 +15,7 @@ contract Lotto is usingProvable {
     event LogWinnerSelected(address winner);
 
     constructor () public{
-        OAR = OracleAddrResolverI(0x830BB03730703B7a98FEEE134fC33EAc645ae59E);
+        OAR = OracleAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
     }
     
     function enter() external payable {
@@ -38,6 +38,7 @@ contract Lotto is usingProvable {
 
     //TODO restrict who can call this
     function selectWinner() public {
+        require(getQuantityOfEntrants() > 0, "Requires at least one entrant to select a winner");
         require(winnerHasNotBeenSet(), "Winner has already been selected");
         require(provableQueryHasNotRun(), "Winner selection already in progress.");
         provableQueryId = provable_query("WolframAlpha", constructProvableQuery()); //TODO switch to more secure source
@@ -59,8 +60,8 @@ contract Lotto is usingProvable {
     
     //provable callback for selectWinner function (this takes a while to be called)
     function __callback(bytes32 myid, string memory result) public override {
-        //TODO validate sender
-        if(myid != provableQueryId) revert();
+        require(msg.sender == provable_cbAddress(), "Callback invoked by unknown address");
+        require(myid == provableQueryId);
         winner = entrants[parseInt(result)];
         distributeWinnings();
         emit LogWinnerSelected(winner);
