@@ -98,7 +98,6 @@ contract('Lotto', async (accounts) => {
 
   // Note: Truffle (or provable bridge) doesn't work well with a single contract having multiple test files TODO reproduce and file bug report
   // BEGIN WINNER SELECTION RELATED TESTS
-
   it('allows winner selection with a single entrant and distributes the funds', async () => {
     // given
     await enterIntoLottoAndVerifyContractState(accounts[1]);
@@ -128,9 +127,14 @@ contract('Lotto', async (accounts) => {
     await lotto.selectWinner();
 
     await truffleAssert.reverts(lotto.selectWinner(), 'Winner selection already in progress.');
-  })
+  });
 
-  // TODO: Winner already selected, cannot select winner
+  it('prevents kicking off winner selection if a winner has already been selected', async() => {
+    await enterIntoLottoAndVerifyContractState();
+    await selectWinnerAndWaitForCompletion();
+
+    await truffleAssert.reverts(lotto.selectWinner(), 'Winner has already been selected.');
+  });
 
   // TODO: Callback function called from incorrect account, transaction reverted
 });
