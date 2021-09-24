@@ -115,13 +115,21 @@ contract('Lotto', async (accounts) => {
   });
 
   // TODO: Happy path - money distributed to winner 2 entrant
+  it('allows winner selection with multiple entrants', async() => {
+    await enterIntoLottoAndVerifyContractState(accounts[1], 1);
+    await enterIntoLottoAndVerifyContractState(accounts[2], 2);
 
-  // TODO: Nobody has entered yet, cannot select winner
+    await selectWinnerAndWaitForCompletion();
+
+    await assertContractBalance(0);
+    const winner = await lotto.winner();
+    assert.isTrue(winner === accounts[1] || winner===accounts[2], "expecting either account 1 or account 2 to win");
+  });
+
   it('prevents kicking off winner selection if there are no entrants', async () => {
     await truffleAssert.reverts(lotto.selectWinner(), 'Requires at least one entrant to select a winner.');
   })
 
-  // TODO: Winner selection already in progress, cannot select winner
   it('prevents kicking off winner selection if winner selection is already in progress', async () => {
     await enterIntoLottoAndVerifyContractState();
     await lotto.selectWinner();
