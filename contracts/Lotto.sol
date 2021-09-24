@@ -60,8 +60,8 @@ contract Lotto is usingProvable {
     
     //provable callback for selectWinner function (this takes a while to be called)
     function __callback(bytes32 myid, string memory result) public override {
-        //TODO validate sender
-        if(myid != provableQueryId) revert();
+        require(msg.sender == provable_cbAddress(), "Callback invoked by unknown address");
+        require(myid == provableQueryId);
         winner = entrants[parseInt(result)];
         distributeWinnings();
         emit LogWinnerSelected(winner);

@@ -99,14 +99,11 @@ contract('Lotto', async (accounts) => {
   // Note: Truffle (or provable bridge) doesn't work well with a single contract having multiple test files TODO reproduce and file bug report
   // BEGIN WINNER SELECTION RELATED TESTS
   it('allows winner selection with a single entrant and distributes the funds', async () => {
-    // given
     await enterIntoLottoAndVerifyContractState(accounts[1]);
     const winnerBalanceBefore = await web3.eth.getBalance(accounts[1]); // after entering but before winning
 
-    // when
     await selectWinnerAndWaitForCompletion();
 
-    // then
     await assertContractBalance(0);
     const winnerBalanceAfter = await web3.eth.getBalance(accounts[1]); //TODO break into helper function?
     // balance after winning should equal balance before winning + entry fee for 1 user
@@ -114,7 +111,6 @@ contract('Lotto', async (accounts) => {
       'Winner account balance incorrect after lottery completion.');
   });
 
-  // TODO: Happy path - money distributed to winner 2 entrant
   it('allows winner selection with multiple entrants', async() => {
     await enterIntoLottoAndVerifyContractState(accounts[1], 1);
     await enterIntoLottoAndVerifyContractState(accounts[2], 2);
@@ -123,7 +119,7 @@ contract('Lotto', async (accounts) => {
 
     await assertContractBalance(0);
     const winner = await lotto.winner();
-    assert.isTrue(winner === accounts[1] || winner===accounts[2], "expecting either account 1 or account 2 to win");
+    assert.isTrue(winner === accounts[1] || winner===accounts[2], 'expecting either account 1 or account 2 to win');
   });
 
   it('prevents kicking off winner selection if there are no entrants', async () => {
@@ -144,5 +140,7 @@ contract('Lotto', async (accounts) => {
     await truffleAssert.reverts(lotto.selectWinner(), 'Winner has already been selected.');
   });
 
-  // TODO: Callback function called from incorrect account, transaction reverted
+  it('asserts that winner is selected by known oracle address', async () => {
+    await truffleAssert.reverts(lotto.__callback(web3.utils.asciiToHex("byte32 value"),"a string id"), 'Callback invoked by unknown address.');
+  });
 });
