@@ -10,7 +10,7 @@ contract('Lotto', async (accounts) => {
   async function enterIntoLottoAndVerifyContractState(entrant = accounts[0], expectedEntrantCount = 1) {
     await lotto.enter({ value: validEntryValue, from: entrant });
     await assertEntrantCount(expectedEntrantCount);
-    await assertContractBalance(validEntryValue*expectedEntrantCount);
+    await assertContractBalance(validEntryValue * expectedEntrantCount);
   }
 
   async function selectWinnerAndWaitForCompletion() {
@@ -19,12 +19,12 @@ contract('Lotto', async (accounts) => {
     await waitForEvent('LogWinnerSelected', lotto);
   }
 
-  async function assertContractBalance(expectedBalance){
+  async function assertContractBalance(expectedBalance) {
     const actualBalance = await lotto.getLotteryBalance.call(); // TODO break out into another helper function
     assert.equal(actualBalance, expectedBalance);
   }
 
-  async function assertEntrantCount(expectedEntrantCount){
+  async function assertEntrantCount(expectedEntrantCount) {
     const actualEntrantCount = await lotto.getQuantityOfEntrants.call();
     assert.equal(actualEntrantCount, expectedEntrantCount);
   }
@@ -40,7 +40,7 @@ contract('Lotto', async (accounts) => {
   it('allows lottery entry', async () => {
     await enterIntoLottoAndVerifyContractState();
 
-    await assertContractBalance(validEntryValue)
+    await assertContractBalance(validEntryValue);
     await assertEntrantCount(1);
   });
 
@@ -48,14 +48,14 @@ contract('Lotto', async (accounts) => {
     await enterIntoLottoAndVerifyContractState();
     await enterIntoLottoAndVerifyContractState(accounts[1], expectedEntrantCount = 2);
 
-    await assertContractBalance(validEntryValue*2)
+    await assertContractBalance(validEntryValue * 2);
     await assertEntrantCount(2);
   });
 
   it('prevents lottery entry if insufficient entry fee provided', async () => {
     await truffleAssert.reverts(lotto.enter({ value: validEntryValue - 1 }), 'Invalid entry fee provided.');
 
-    await assertContractBalance(0)
+    await assertContractBalance(0);
     await assertEntrantCount(0);
   });
 
@@ -105,13 +105,13 @@ contract('Lotto', async (accounts) => {
     await selectWinnerAndWaitForCompletion();
 
     await assertContractBalance(0);
-    const winnerBalanceAfter = await web3.eth.getBalance(accounts[1]); //TODO break into helper function?
+    const winnerBalanceAfter = await web3.eth.getBalance(accounts[1]); // TODO break into helper function?
     // balance after winning should equal balance before winning + entry fee for 1 user
     assert.equal(parseInt(winnerBalanceAfter), parseInt(winnerBalanceBefore) + parseInt(validEntryValue),
       'Winner account balance incorrect after lottery completion.');
   });
 
-  it('allows winner selection with multiple entrants', async() => {
+  it('allows winner selection with multiple entrants', async () => {
     await enterIntoLottoAndVerifyContractState(accounts[1], 1);
     await enterIntoLottoAndVerifyContractState(accounts[2], 2);
 
@@ -119,12 +119,12 @@ contract('Lotto', async (accounts) => {
 
     await assertContractBalance(0);
     const winner = await lotto.winner();
-    assert.isTrue(winner === accounts[1] || winner===accounts[2], 'expecting either account 1 or account 2 to win');
+    assert.isTrue(winner === accounts[1] || winner === accounts[2], 'expecting either account 1 or account 2 to win');
   });
 
   it('prevents kicking off winner selection if there are no entrants', async () => {
     await truffleAssert.reverts(lotto.selectWinner(), 'Requires at least one entrant to select a winner.');
-  })
+  });
 
   it('prevents kicking off winner selection if winner selection is already in progress', async () => {
     await enterIntoLottoAndVerifyContractState();
@@ -133,7 +133,7 @@ contract('Lotto', async (accounts) => {
     await truffleAssert.reverts(lotto.selectWinner(), 'Winner selection already in progress.');
   });
 
-  it('prevents kicking off winner selection if a winner has already been selected', async() => {
+  it('prevents kicking off winner selection if a winner has already been selected', async () => {
     await enterIntoLottoAndVerifyContractState();
     await selectWinnerAndWaitForCompletion();
 
@@ -141,6 +141,6 @@ contract('Lotto', async (accounts) => {
   });
 
   it('asserts that winner is selected by known oracle address', async () => {
-    await truffleAssert.reverts(lotto.__callback(web3.utils.asciiToHex("byte32 value"),"a string id"), 'Callback invoked by unknown address.');
+    await truffleAssert.reverts(lotto.__callback(web3.utils.asciiToHex('byte32 value'), 'a string id'), 'Callback invoked by unknown address.');
   });
 });
