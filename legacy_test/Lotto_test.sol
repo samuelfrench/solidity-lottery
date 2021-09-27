@@ -15,6 +15,7 @@ import "./LottoMock.sol";
 import "../contracts/Lotto.sol";
 
 //TODO all this needs more testing
+//TODO is lottomock needed? - verify at end
 contract lottoEntranceTest is LottoMock {
     //ENTRY test cases
 
@@ -23,8 +24,7 @@ contract lottoEntranceTest is LottoMock {
     /// #value: 6000000000000000
     function enterEntryFeeExceedsRequirement() public payable {
         Assert.equal(getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
-        //TODO this seems like a bug
-        Assert.equal(getLotteryBalance(), uint256(6000000000000000), "expecting 0 lottery balance before entering");
+        Assert.equal(getLotteryBalance(), uint256(6000000000000000), "expecting 0 lottery balance before entering"); //TODO this seems like an oddity with how the custom txn context is implemented with inheritance (could make a simplified case and report another issue)
 
         try this.enter{value:6000000000000000}() {
             Assert.ok(false, 'succeed unexpected');
@@ -34,7 +34,7 @@ contract lottoEntranceTest is LottoMock {
             Assert.ok(false, 'failed unexpected');
         }
 
-        Assert.equal(getLotteryBalance(), uint256(6000000000000000), "expecting lottery balance equal to entrance fee after entering"); //TODO this seems like a bug
+        Assert.equal(getLotteryBalance(), uint256(6000000000000000), "expecting lottery balance equal to entrance fee after entering"); //TODO this seems like an oddity with how the custom txn context is implemented with inheritance
         Assert.equal(this.getQuantityOfEntrants(), uint256(0), "user should not have successfully entered the lottery");
     }
 
@@ -43,11 +43,11 @@ contract lottoEntranceTest is LottoMock {
     /// #value: 5000000000000000
     function enterSuccessfullySingleEntrant() public payable {
         Assert.equal(getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
-        Assert.equal(getLotteryBalance(), uint256(11000000000000000), "expecting 0 lottery balance before entering"); //TODO - this seems to be broken from test lib
+        Assert.equal(getLotteryBalance(), uint256(11000000000000000), "expecting 0 lottery balance before entering"); //TODO this seems like an oddity with how the custom txn context is implemented with inheritance
 
         this.enter{value:5000000000000000}();
 
-        Assert.equal(getLotteryBalance(), uint256(11000000000000000), "expecting lottery balance equal to entrance fee after entering");
+        Assert.equal(getLotteryBalance(), uint256(11000000000000000), "expecting lottery balance equal to entrance fee after entering");  //TODO this seems like an oddity with how the custom txn context is implemented with inheritance
         Assert.equal(getQuantityOfEntrants(), uint256(1), "user should have successfully entered the lottery");
     }
 }
@@ -57,28 +57,23 @@ contract lottoMultipleEntranceTest is Lotto {
     /// #value: 5000000000000000
     function firstEntry() public payable {
         Assert.equal(getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
-        //Assert.equal(this.getLotteryBalance(), uint256(6000000000000000), "expecting 0 lottery balance before entering");
         Assert.equal(msg.sender, TestsAccounts.getAccount(0), "Invalid sender");
 
-        this.enter{value:5000000000000000}();
+        enter();
 
         Assert.equal(getQuantityOfEntrants(), uint256(1), "user should have successfully entered the lottery");
-        Assert.equal(getLotteryBalance(), uint256(5000000000000000), "expecting lottery balance equal to entrance fee after entering");
     }
 
     /// #value: 5000000000000000
     /// #sender: account-1
     function secondEntry() public payable {
-        //Assert.equal(this.getLotteryBalance(), uint256(5000000000000000), "One user has already entered.");
         Assert.equal(getQuantityOfEntrants(), uint256(1), "Expecting an existing entry.");
         Assert.equal(msg.sender, TestsAccounts.getAccount(1), "Invalid sender");
 
         //don't call function externally to use sender mocking
         enter();
 
-        //TODO
         Assert.equal(getQuantityOfEntrants(), uint256(2), "second user should have successfully entered the lottery");
-        //Assert.equal(getLotteryBalance(), 1000000000000000, "expecting lottery balance equal to entrance fee for two users after entering");
     }
 }
 
