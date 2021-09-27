@@ -7,7 +7,7 @@ contract Lotto is usingProvable {
     mapping(address => uint) public balances;
     uint256 public entranceFee = 5000000000000000; //wei
     uint256 public moneyDistributedDebug = 3;
-    
+
     address payable public winner;
 
     bytes32 provableQueryId;
@@ -15,23 +15,24 @@ contract Lotto is usingProvable {
     event LogWinnerSelected(address winner);
 
     constructor () public{
-        OAR = OracleAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
+        //OAR = OracleAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
     }
-    
-    function enter() external payable {
+
+    //this must be made public for testing
+    function enter() public payable {
         require(msg.value==entranceFee, "Invalid entry fee provided.");
         require(balances[msg.sender] == 0, "User has already entered. Only one entry allowed per address.");
         require(winnerHasNotBeenSet(), "Lottery has already completed. A winner was already selected.");
         require(provableQueryHasNotRun(), "Winner selection already in progress. No entries allowed now.");
-        
+
         balances[msg.sender] = msg.value;
         entrants.push(msg.sender);
     }
-    
+
     function getLotteryBalance() public returns (uint256) {
-       return address(this).balance;
+        return address(this).balance;
     }
-    
+
     function getQuantityOfEntrants() public view returns(uint count) {
         return entrants.length;
     }
@@ -45,11 +46,11 @@ contract Lotto is usingProvable {
         emit LogWinnerSelectionStarted("Winner selection has started!" );
         //__callback function is activated
     }
-    
+
     function winnerHasNotBeenSet() private view returns (bool){
         return winner == address(0);
     }
-    
+
     function provableQueryHasNotRun() private view returns (bool){
         return provableQueryId == 0;
     }
@@ -57,7 +58,7 @@ contract Lotto is usingProvable {
     function constructProvableQuery() private view returns (string memory){
         return strConcat("random number between 0 and ", uint2str(entrants.length-1));
     }
-    
+
     //provable callback for selectWinner function (this takes a while to be called)
     function __callback(bytes32 myid, string memory result) public override {
         require(msg.sender == provable_cbAddress(), "Callback invoked by unknown address");
@@ -66,7 +67,7 @@ contract Lotto is usingProvable {
         distributeWinnings();
         emit LogWinnerSelected(winner);
     }
-    
+
     //TODO move to new file and restrict visibility
     function distributeWinnings() public returns (uint256) {
         //TODO check if winner has not been set yet
