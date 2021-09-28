@@ -69,6 +69,26 @@ contract LottoEntranceTestNoInherit {
         Assert.equal(l.getQuantityOfEntrants(), uint256(0), "user should not have successfully entered the lottery");
     }
 
+    ///case 2: when: fee too little -> then: return money, don't enter
+    /// #sender: account-0
+    /// #value: 1000
+    function enterEntryFeeTooLittle() public payable {
+        Assert.equal(l.getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
+        Assert.equal(l.getLotteryBalance(), uint256(0), "expecting 0 lottery balance before entering");
+
+
+        try l.enter{value:1000}() {
+            Assert.ok(false, 'succeed unexpected');
+        } catch Error(string memory reason) {
+            Assert.equal(reason, "Invalid entry fee provided.", "It should fail due to invalid entry fee.");
+        } catch (bytes memory ) {
+            Assert.ok(false, 'failed unexpected');
+        }
+
+        Assert.equal(l.getLotteryBalance(), uint256(0), "expecting lottery balance equal to entrance fee after entering");
+        Assert.equal(l.getQuantityOfEntrants(), uint256(0), "user should have successfully entered the lottery");
+    }
+
     ///case 3: when already entered -> then: return money, don't enter
     /// #value: 10000000000000000
     function enterAlreadyEntered() public payable {
@@ -120,25 +140,6 @@ contract lottoMultipleEntranceTest is Lotto {
 
 
 /*
-    ///case 2: when: fee too little -> then: return money, don't enter
-    /// #sender: account-0
-    /// #value: 1000
-    function enterEntryFeeTooLittle() public payable {
-        Assert.equal(this.getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
-        Assert.equal(this.getLotteryBalance(), uint256(0), "expecting 0 lottery balance before entering");
-
-
-        try this.enter{value:1000}() {
-            Assert.ok(false, 'succeed unexpected');
-        } catch Error(string memory reason) {
-            Assert.equal(reason, "Invalid entry fee provided.", "It should fail due to invalid entry fee.");
-        } catch (bytes memory ) {
-            Assert.ok(false, 'failed unexpected');
-        }
-
-        Assert.equal(this.getLotteryBalance(), uint256(0), "expecting lottery balance equal to entrance fee after entering");
-        Assert.equal(this.getQuantityOfEntrants(), uint256(0), "user should have successfully entered the lottery");
-    }
 
     ///case 4: lottery already completed -> then: return money, don't enter
     function enterWinnerAlreadySelected() public payable {
@@ -177,3 +178,4 @@ contract lottoMultipleEntranceTest is Lotto {
     }
 }
 */
+
