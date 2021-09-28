@@ -1,7 +1,6 @@
 pragma solidity 0.6.12;
 import "./provableAPI.sol";
 
-//TODO stop using provable (switch to chainlink)
 contract Lotto is usingProvable {
     address payable[] public entrants;
     mapping(address => uint) public balances;
@@ -37,7 +36,6 @@ contract Lotto is usingProvable {
         return entrants.length;
     }
 
-    //TODO restrict who can call this
     function selectWinner() public {
         require(getQuantityOfEntrants() > 0, "Requires at least one entrant to select a winner");
         require(winnerHasNotBeenSet(), "Winner has already been selected");
