@@ -1,7 +1,3 @@
-// SPDX-License-Identifier: GPL-3.0
-
-// INSTRUCTIONS: Run this in the "Solidity Unit Testing Plugin" within the remix IDE
-
 pragma solidity 0.6.12;
 
 // This import is automatically injected by Remix
@@ -38,7 +34,7 @@ contract LottoEntranceTestNoInherit {
         lotto = new Lotto();
     }
 
-    ///case 6: enter successfully
+    ///case 6: enter successfully - TODO remove these comments
     /// #value: 5000000000000000
     function enterSuccessfullySingleEntrant() public payable {
         Assert.equal(lotto.getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
@@ -112,7 +108,8 @@ contract LottoEntranceTestNoInherit {
     }
 }
 
-contract lottoMultipleEntranceTest is Lotto {
+//inherit from lotto to test multiple senders functionality
+contract LottoMultipleEntranceTest is Lotto {
     /// #sender: account-0
     /// #value: 5000000000000000
     function firstEntry() public payable {
@@ -137,15 +134,14 @@ contract lottoMultipleEntranceTest is Lotto {
     }
 }
 
-
-
-/*
+//test that require inheriting from a mock object to manually change the state of contract under test
+contract EnterWinnerAlreadySelected is LottoMock {
 
     ///case 4: lottery already completed -> then: return money, don't enter
+    /// #value: 5000000000000000
     function enterWinnerAlreadySelected() public payable {
-        Assert.equal(this.getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
-        Assert.equal(this.getLotteryBalance(), uint256(0), "expecting 0 lottery balance before entering");
-        this.setWinner();
+        Assert.equal(getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
+        setWinner();
 
         try this.enter{value:5000000000000000}() {
             Assert.ok(false, 'succeed unexpected');
@@ -155,15 +151,17 @@ contract lottoMultipleEntranceTest is Lotto {
             Assert.ok(false, 'failed unexpected');
         }
 
-        Assert.equal(this.getLotteryBalance(), uint256(0), "expecting lottery balance equal to entrance fee after entering");
-        Assert.equal(this.getQuantityOfEntrants(), uint256(0), "user should have successfully entered the lottery");
+        Assert.equal(getQuantityOfEntrants(), uint256(0), "user should have successfully entered the lottery");
     }
+}
+
+contract EnterWinnerSelectionInProgress is LottoMock {
 
     ///case 5: Winner selection in progress -> then: return money, don't enter
+    /// #value: 5000000000000000
     function enterWinnerSelectionInProgress() public payable {
-        Assert.equal(this.getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
-        Assert.equal(this.getLotteryBalance(), uint256(0), "expecting 0 lottery balance before entering");
-        this.setProvableQueryId();
+        Assert.equal(getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
+        setProvableQueryId(); //TODO is there a better way for this
 
         try this.enter{value:5000000000000000}() {
             Assert.ok(false, 'succeed unexpected');
@@ -173,9 +171,6 @@ contract lottoMultipleEntranceTest is Lotto {
             Assert.ok(false, 'failed unexpected');
         }
 
-        Assert.equal(this.getLotteryBalance(), uint256(0), "expecting lottery balance equal to entrance fee after entering");
         Assert.equal(this.getQuantityOfEntrants(), uint256(0), "user should have successfully entered the lottery");
     }
 }
-*/
-
