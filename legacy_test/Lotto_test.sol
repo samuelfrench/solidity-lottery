@@ -10,10 +10,9 @@ import "remix_accounts.sol";
 import "./LottoMock.sol";
 import "../contracts/Lotto.sol";
 
-//this style of inheriting from the class under test allows for impersonating senders but causes issues when checking the contract balance (because the test context adds value)
-contract lottoEntranceTestWithInheritance is LottoMock {
+// this style of inheriting from the class under test allows for impersonating senders but causes issues when checking the contract balance (because the test context adds value)
+contract lottoEntranceTestWithInheritance is Lotto {
 
-    ///case 6: enter successfully
     /// #value: 5000000000000000
     function enterSuccessfullySingleEntrantInheritVersion() public payable {
         Assert.equal(getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
@@ -26,7 +25,7 @@ contract lottoEntranceTestWithInheritance is LottoMock {
     }
 }
 
-//this style works for checking contract balance but doesn't let you proprerly impersonate multiple senders
+// this style works for checking contract balance but doesn't let you properly impersonate multiple senders
 contract LottoEntranceTestNoInherit {
     Lotto lotto;
 
@@ -34,7 +33,6 @@ contract LottoEntranceTestNoInherit {
         lotto = new Lotto();
     }
 
-    ///case 6: enter successfully - TODO remove these comments
     /// #value: 5000000000000000
     function enterSuccessfullySingleEntrant() public payable {
         Assert.equal(lotto.getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
@@ -47,7 +45,7 @@ contract LottoEntranceTestNoInherit {
     }
 
 
-    ///case 1: when: fee too much -> then: return money, don't enter
+    // when: fee too much -> then: return money, don't enter
     /// #value: 6000000000000000
     function enterEntryFeeExceedsRequirement() public payable {
         Assert.equal(lotto.getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
@@ -65,7 +63,7 @@ contract LottoEntranceTestNoInherit {
         Assert.equal(lotto.getQuantityOfEntrants(), uint256(0), "user should not have successfully entered the lottery");
     }
 
-    ///case 2: when: fee too little -> then: return money, don't enter
+    // when: fee too little -> then: return money, don't enter
     /// #sender: account-0
     /// #value: 1000
     function enterEntryFeeTooLittle() public payable {
@@ -85,7 +83,7 @@ contract LottoEntranceTestNoInherit {
         Assert.equal(lotto.getQuantityOfEntrants(), uint256(0), "user should have successfully entered the lottery");
     }
 
-    ///case 3: when already entered -> then: return money, don't enter
+    // when already entered -> then: return money, don't enter
     /// #value: 10000000000000000
     function enterAlreadyEntered() public payable {
         Assert.equal(lotto.getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
@@ -108,7 +106,7 @@ contract LottoEntranceTestNoInherit {
     }
 }
 
-//inherit from lotto to test multiple senders functionality
+//inherit from Lotto to test multiple senders functionality
 contract LottoMultipleEntranceTest is Lotto {
     /// #sender: account-0
     /// #value: 5000000000000000
@@ -137,7 +135,7 @@ contract LottoMultipleEntranceTest is Lotto {
 //test that require inheriting from a mock object to manually change the state of contract under test
 contract EnterWinnerAlreadySelected is LottoMock {
 
-    ///case 4: lottery already completed -> then: return money, don't enter
+    // lottery already completed -> then: return money, don't enter
     /// #value: 5000000000000000
     function enterWinnerAlreadySelected() public payable {
         Assert.equal(getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
@@ -157,7 +155,7 @@ contract EnterWinnerAlreadySelected is LottoMock {
 
 contract EnterWinnerSelectionInProgress is LottoMock {
 
-    ///case 5: Winner selection in progress -> then: return money, don't enter
+    // winner selection in progress -> then: return money, don't enter
     /// #value: 5000000000000000
     function enterWinnerSelectionInProgress() public payable {
         Assert.equal(getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
