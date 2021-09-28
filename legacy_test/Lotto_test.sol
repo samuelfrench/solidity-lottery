@@ -44,7 +44,6 @@ contract LottoEntranceTestNoInherit {
         Assert.equal(lotto.getQuantityOfEntrants(), uint256(1), "user should have successfully entered the lottery");
     }
 
-
     // when: fee too much -> then: return money, don't enter
     /// #value: 6000000000000000
     function enterEntryFeeExceedsRequirement() public payable {
