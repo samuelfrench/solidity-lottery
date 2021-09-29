@@ -16,6 +16,8 @@
         "ecmaVersion": 2018
     },
     "rules": {
-        "no-undef": "off"
+        "no-undef": "off",
+        "max-len": ["error", 120],
+        "no-underscore-dangle": "off"
     }
 }
