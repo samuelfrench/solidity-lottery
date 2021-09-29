@@ -14,7 +14,7 @@ contract Lotto is usingProvable {
     event LogWinnerSelected(address winner);
 
     constructor () public{
-        //OAR = OracleAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
+        //OAR = OracleAddrResolverI(0xf1E0658Dd4218b146718ada57b962B5f44725eEA);
     }
 
     //this must be made public for testing
@@ -28,7 +28,7 @@ contract Lotto is usingProvable {
         entrants.push(msg.sender);
     }
 
-    function getLotteryBalance() public returns (uint256) {
+    function getLotteryBalance() public view returns (uint256) {
         return address(this).balance;
     }
 
@@ -66,9 +66,7 @@ contract Lotto is usingProvable {
         emit LogWinnerSelected(winner);
     }
 
-    //TODO move to new file and restrict visibility
-    function distributeWinnings() public returns (uint256) {
-        //TODO check if winner has not been set yet
+    function distributeWinnings() internal {
         winner.transfer(getLotteryBalance());
     }
 }
