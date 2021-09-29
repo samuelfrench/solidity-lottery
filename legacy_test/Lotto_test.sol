@@ -148,7 +148,8 @@ contract EnterWinnerAlreadySelected is LottoMock {
             Assert.ok(false, 'failed unexpected');
         }
 
-        Assert.equal(getQuantityOfEntrants(), uint256(0), "user should have successfully entered the lottery");
+        Assert.equal(getQuantityOfEntrants(), uint256(0),
+            "If a winner was already selected, there should not be any new entrants");
     }
 }
 
