@@ -7,6 +7,16 @@ contract('Lotto', async (accounts) => {
   let lotto;
 
   // helpers
+  async function assertContractBalance(expectedBalance) {
+    const actualBalance = await lotto.getLotteryBalance.call();
+    assert.equal(actualBalance, expectedBalance);
+  }
+
+  async function assertEntrantCount(expectedEntrantCount) {
+    const actualEntrantCount = await lotto.getQuantityOfEntrants.call();
+    assert.equal(actualEntrantCount, expectedEntrantCount);
+  }
+
   async function enterIntoLottoAndVerifyContractState(entrant = accounts[0], expectedEntrantCount = 1) {
     await lotto.enter({ value: validEntryValue, from: entrant });
     await assertEntrantCount(expectedEntrantCount);
@@ -17,16 +27,6 @@ contract('Lotto', async (accounts) => {
     const selectWinnerResult = await lotto.selectWinner();
     await truffleAssert.eventEmitted(selectWinnerResult, 'LogWinnerSelectionStarted');
     await waitForEvent('LogWinnerSelected', lotto);
-  }
-
-  async function assertContractBalance(expectedBalance) {
-    const actualBalance = await lotto.getLotteryBalance.call();
-    assert.equal(actualBalance, expectedBalance);
-  }
-
-  async function assertEntrantCount(expectedEntrantCount) {
-    const actualEntrantCount = await lotto.getQuantityOfEntrants.call();
-    assert.equal(actualEntrantCount, expectedEntrantCount);
   }
 
   beforeEach(async () => {
@@ -69,7 +69,8 @@ contract('Lotto', async (accounts) => {
   it('prevents lottery entry if the address has already been entered into the lottery', async () => {
     await enterIntoLottoAndVerifyContractState();
 
-    await truffleAssert.reverts(lotto.enter({ value: validEntryValue }), 'User has already entered. Only one entry allowed per address.');
+    await truffleAssert.reverts(lotto.enter({ value: validEntryValue }),
+      'User has already entered. Only one entry allowed per address.');
 
     await assertContractBalance(validEntryValue);
     await assertEntrantCount(1);
@@ -96,7 +97,8 @@ contract('Lotto', async (accounts) => {
     await assertContractBalance(0);
   });
 
-  // Note: Truffle (or provable bridge) doesn't work well with a single contract having multiple test files TODO reproduce and file bug report
+  // Note: Truffle (or provable bridge) doesn't work well with a single contract having multiple test files
+  // TODO reproduce ^^^ and file bug report
   // BEGIN WINNER SELECTION RELATED TESTS
   it('allows winner selection with a single entrant and distributes the funds', async () => {
     await enterIntoLottoAndVerifyContractState(accounts[1]);
@@ -107,7 +109,7 @@ contract('Lotto', async (accounts) => {
     await assertContractBalance(0);
     const winnerBalanceAfter = await web3.eth.getBalance(accounts[1]); // TODO break into helper function?
     // balance after winning should equal balance before winning + entry fee for 1 user
-    assert.equal(parseInt(winnerBalanceAfter), parseInt(winnerBalanceBefore) + parseInt(validEntryValue),
+    assert.equal(parseInt(winnerBalanceAfter, 10), parseInt(winnerBalanceBefore, 10) + parseInt(validEntryValue, 10),
       'Winner account balance incorrect after lottery completion.');
   });
 
@@ -141,6 +143,9 @@ contract('Lotto', async (accounts) => {
   });
 
   it('asserts that winner is selected by known oracle address', async () => {
-    await truffleAssert.reverts(lotto.__callback(web3.utils.asciiToHex('byte32 value'), 'a string id'), 'Callback invoked by unknown address.');
+    await truffleAssert.reverts(
+      lotto.__callback(web3.utils.asciiToHex('byte32 value'), 'a string id'),
+      'Callback invoked by unknown address.',
+    );
   });
 });

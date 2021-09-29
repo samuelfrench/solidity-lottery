@@ -1,3 +1,5 @@
+/* eslint no-await-in-loop: "off" */
+
 const Web3 = require('web3');
 
 const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -8,7 +10,7 @@ module.exports.waitForEvent = async (eventName, contract) => {
   while (events.length < 1) {
     console.log(`waiting for event ${secondCounter}`);
     await sleep(1000);
-    secondCounter++;
+    secondCounter += 1;
     events = await contract.getPastEvents(eventName, { fromBlock: 0, toBlock: 'latest' });
     if (secondCounter > 30) {
       assert(false, `Timed out waiting for event: ${eventName}`);
