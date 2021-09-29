@@ -63,7 +63,6 @@ contract LottoEntranceTestNoInherit {
     }
 
     // when: fee too little -> then: return money, don't enter
-    /// #sender: account-0
     /// #value: 1000
     function enterEntryFeeTooLittle() public payable {
         Assert.equal(lotto.getQuantityOfEntrants(), uint256(0), "expecting 0 entrants before entering");
@@ -107,6 +106,7 @@ contract LottoEntranceTestNoInherit {
 
 //inherit from Lotto to test multiple senders functionality
 contract LottoMultipleEntranceTest is Lotto {
+
     /// #sender: account-0
     /// #value: 5000000000000000
     function firstEntry() public payable {
