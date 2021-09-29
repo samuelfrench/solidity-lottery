@@ -20,7 +20,7 @@ contract('Lotto', async (accounts) => {
   }
 
   async function assertContractBalance(expectedBalance) {
-    const actualBalance = await lotto.getLotteryBalance.call(); // TODO break out into another helper function
+    const actualBalance = await lotto.getLotteryBalance.call();
     assert.equal(actualBalance, expectedBalance);
   }
 
