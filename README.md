@@ -2,7 +2,7 @@
 ### Running Tests
 This project contains two sets of tests, one using the
 [Unit Testing Plugin for Remix IDE](https://remix-ide.readthedocs.io/en/latest/unittesting.html)
-(tests located in `legacy_test/`)
+(tests located in `legacy_remix_test/`)
 while the other uses the [Truffle Suite](https://github.com/trufflesuite/truffle) (tests located in `test/`)
 #### In truffle
 1. Install [nvm](https://github.com/nvm-sh/nvm)
@@ -29,7 +29,7 @@ Please add this line to your contract constructor:
 
 OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
 ```
-Following those instructions, copy the second line into line Lotto.sol constructor and ensure it's uncommented
+Following those instructions, copy the second line into line `Lotto.sol` constructor and ensure it's uncommented
 
 8. In the first terminal window, where you previously ran `truffle develop`, run `test`
 
@@ -38,9 +38,9 @@ Following those instructions, copy the second line into line Lotto.sol construct
 1. Go to [https://remix.ethereum.org/](https://remix.ethereum.org/)
 2. Copy Files
     1. Copy `contracts/Lotto.sol` into a remix workspace at `contracts/Lotto.sol`
-    2. Copy `legacy_test/Lotto_test.sol` into a remix workspace at `tests/Lotto_test.sol`
-    3. Copy `legacy_test/LottoMock.sol` into a remix workspace at `tests/LottoMock.sol`
-3. Run tests: Navigate to `tests/Lotto_test.sol` in a remix workspace. On the left side of the IDE there is a unit testing panel (two checkmarks). Click `run` within that panel.
+    2. Copy `legacy_remix_test/LottoRemixIDE_test.sol` into a remix workspace at `tests/LottoRemixIDE_test.sol`
+    3. Copy `legacy_remix_test/LottoMock.sol` into a remix workspace at `tests/LottoMock.sol`
+3. Run tests: Navigate to `tests/LottoRemixIDE_test.sol` in a remix workspace. On the left side of the IDE there is a unit testing panel (two checkmarks). Click `run` within that panel.
 
 # Future Enhancements
 
