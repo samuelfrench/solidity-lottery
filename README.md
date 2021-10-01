@@ -38,8 +38,8 @@ Following those instructions, copy the second line into line `Lotto.sol` constru
 1. Go to [https://remix.ethereum.org/](https://remix.ethereum.org/)
 2. Copy Files
     1. Copy `contracts/Lotto.sol` into a remix workspace at `contracts/Lotto.sol`
-    2. Copy `legacy_test/LottoRemixIDE_test.sol` into a remix workspace at `tests/LottoRemixIDE_test.sol`
-    3. Copy `legacy_test/LottoMock.sol` into a remix workspace at `tests/LottoMock.sol`
+    2. Copy `legacy_remix_test/LottoRemixIDE_test.sol` into a remix workspace at `tests/LottoRemixIDE_test.sol`
+    3. Copy `legacy_remix_test/LottoMock.sol` into a remix workspace at `tests/LottoMock.sol`
 3. Run tests: Navigate to `tests/LottoRemixIDE_test.sol` in a remix workspace. On the left side of the IDE there is a unit testing panel (two checkmarks). Click `run` within that panel.
 
 # Future Enhancements
