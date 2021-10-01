@@ -5,7 +5,6 @@ contract Lotto is usingProvable {
     address payable[] public entrants;
     mapping(address => uint) public balances;
     uint256 public entranceFee = 5000000000000000; //wei
-    uint256 public moneyDistributedDebug = 3;
 
     address payable public winner;
 
